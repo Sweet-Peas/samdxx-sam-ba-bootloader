@@ -50,6 +50,16 @@
  * PB22 : output
  * PA15 : input
  *
+ * SweetPea ESPSAMD21 modifications
+ * ----------------------------------------
+ * The ESPSAMD21 have an RGB LED connected to the device which can be used to
+ * indicate the status of the USB link and if there is rx and tx activity.
+ * Here we will use the Green LED to indicate that the link is up and established.
+ * By briefly turning the LED off when data is sent or has arrived activity is
+ * indicated.
+ * Before receiving the prototypes, development is done on the SAMD21_XPLAINED_PRO
+ * board which has a user LED on PB30.
+ *
  * The application board shall avoid driving the PA25,PA24,PB23,PB22 and PA15 signals
  * while the boot program is running (after a POR for example)
  *
@@ -95,7 +105,7 @@ static void check_start_application(void)
 {
 	volatile PortGroup *led_port = (volatile PortGroup *)&PORT->Group[1];
 	led_port->DIRSET.reg = (1<<30);
-	led_port->OUTCLR.reg = (1<<30);
+	led_port->OUTSET.reg = (1<<30);
 
 #if defined(BOOT_DOUBLE_TAP_ADDRESS)
 	#define DOUBLE_TAP_MAGIC 0x07738135
@@ -253,6 +263,16 @@ void system_init()
 #	define DEBUG_PIN_LOW 	do{}while(0)
 #endif
 
+#define ACTIVE_LED
+void set_cdc_active_led(int state)
+{
+	if (state) {
+		port_pin_set_output_level(ACTIVE_LED, 0);
+	} else {
+		port_pin_set_output_level(ACTIVE_LED, 1);
+	}
+}
+
 
 /**
  *  \brief SAMD21 SAM-BA Main loop.
@@ -273,7 +293,7 @@ int main(void)
 	system_init();
 	cpu_irq_enable();
 
-	#if SAM_BA_INTERFACE == SAM_BA_UART_ONLY  ||  SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
+#if SAM_BA_INTERFACE == SAM_BA_UART_ONLY ||  SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
 	/* UART is enabled in all cases */
 	usart_open();
 #endif
@@ -286,6 +306,7 @@ int main(void)
 	while (1) {
 #if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY  ||  SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
 		if (pCdc->IsConfigured(pCdc) != 0) {
+			set_cdc_active_led(true);
 			main_b_cdc_enable = true;
 		}
 

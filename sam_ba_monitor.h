@@ -37,9 +37,6 @@
 #define SAM_BA_UART_ONLY            1
 #define SAM_BA_USBCDC_ONLY          2
 
-/* We only need the USBCDC interface for the ESPSAMD21 boot loader */
-#define SAM_BA_INTERFACE    SAM_BA_USBCDC_ONLY
-
 #ifndef SAM_BA_INTERFACE
 #define SAM_BA_INTERFACE    SAM_BA_BOTH_INTERFACES
 #endif
