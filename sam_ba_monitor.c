@@ -34,6 +34,7 @@
 #include "uart_driver.h"
 #include "compiler.h"
 #include "cdc_enumerate.h"
+#include "led.h"
 
 const char RomBOOT_Version[] = SAM_BA_VERSION;
 const char RomBOOT_ExtendedCapabilities[] = "[Arduino:XYZ]";
@@ -203,6 +204,7 @@ void sam_ba_monitor_loop(void)
 {
 	length = ptr_monitor_if->getdata(data, SIZEBUFMAX);
 	ptr = data;
+	toggle_cdc_activity_led();
 	for (i = 0; i < length; i++, ptr++)
 	{
 		if (*ptr == 0xff) continue;

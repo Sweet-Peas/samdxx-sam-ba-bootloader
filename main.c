@@ -72,7 +72,7 @@
  *
  * Memory Mapping
  * --------------------
- * SAM-BA code will be located at 0x0 and executed before any applicative code.
+ * SAM-BA code will be located at 0x0 and executed before any application code.
  *
  * Applications compiled to be executed along with the bootloader will start at
  * 0x2000
@@ -88,10 +88,13 @@
 #include "sam_ba_monitor.h"
 #include "usart_sam_ba.h"
 #include "main.h"
+#include "led.h"
 #include "cdc_enumerate.h"
 
 #define NVM_SW_CALIB_DFLL48M_COARSE_VAL   58
 #define NVM_SW_CALIB_DFLL48M_FINE_VAL     64
+// This is where the LED pin is defined, change as needed.
+#define ACTIVE_LED		PORT_PB30
 
 static void check_start_application(void);
 
@@ -103,10 +106,6 @@ static volatile bool main_b_cdc_enable = false;
  */
 static void check_start_application(void)
 {
-	volatile PortGroup *led_port = (volatile PortGroup *)&PORT->Group[1];
-	led_port->DIRSET.reg = (1<<30);
-	led_port->OUTSET.reg = (1<<30);
-
 #if defined(BOOT_DOUBLE_TAP_ADDRESS)
 	#define DOUBLE_TAP_MAGIC 0x07738135
 	if (PM->RCAUSE.bit.POR)
@@ -169,8 +168,6 @@ static void check_start_application(void)
 		return;
 	}
 #endif
-
-	led_port->OUTSET.reg = (1<<30);
 
 	/* Rebase the Stack Pointer */
 	__set_MSP(*(uint32_t *) APP_START_ADDRESS);
@@ -263,17 +260,6 @@ void system_init()
 #	define DEBUG_PIN_LOW 	do{}while(0)
 #endif
 
-#define ACTIVE_LED
-void set_cdc_active_led(int state)
-{
-	if (state) {
-		port_pin_set_output_level(ACTIVE_LED, 0);
-	} else {
-		port_pin_set_output_level(ACTIVE_LED, 1);
-	}
-}
-
-
 /**
  *  \brief SAMD21 SAM-BA Main loop.
  *  \return Unused (ANSI-C compatibility).
@@ -284,6 +270,8 @@ int main(void)
 	P_USB_CDC pCdc;
 #endif
 	DEBUG_PIN_HIGH;
+
+	init_leds();
 
 	/* Jump in application if condition is satisfied */
 	check_start_application();
@@ -306,8 +294,11 @@ int main(void)
 	while (1) {
 #if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY  ||  SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
 		if (pCdc->IsConfigured(pCdc) != 0) {
-			set_cdc_active_led(true);
+			set_cdc_activity_led(true);
 			main_b_cdc_enable = true;
+		} else {
+			set_cdc_activity_led(false);
+			main_b_cdc_enable = false;
 		}
 
 		//Check if a USB enumeration has succeeded

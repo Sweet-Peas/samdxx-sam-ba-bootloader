@@ -10,7 +10,7 @@ BUILD_PATH=build
 INCLUDES=-I CMSIS/CMSIS/Include/ -I CMSIS/Device/ATMEL/ -I./drivers/ -I./utils/ \
 		-I./utils/preprocessor/ -I./utils/interrupt 
 SOURCES=main.c sam_ba_monitor.c startup_samd21.c usart_sam_ba.c drivers/cdc_enumerate.c \
-		drivers/uart_driver.c utils/interrupt/interrupt_sam_nvic.c 
+		drivers/uart_driver.c utils/interrupt/interrupt_sam_nvic.c led.c 
 OBJECTS=$(addprefix $(BUILD_PATH)/, $(SOURCES:.c=.o))
 
 # Sets the serial interface according to the following table
