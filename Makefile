@@ -5,7 +5,7 @@ CFLAGS=-mthumb -mcpu=cortex-m0plus -Wall -c -g -Os -w -std=gnu99 -ffunction-sect
 LDFLAGS=-mthumb -mcpu=cortex-m0plus -Wall -Wl,--cref -Wl,--check-sections -Wl,--gc-sections \
 		-Wl,--unresolved-symbols=report-all -Wl,--warn-common -Wl,--warn-section-align \
 		-Wl,--warn-unresolved-symbols -Wl,-Map=Map.map
-BLD_EXTA_FLAGS=-D__SAMD21J18A__
+BLD_EXTA_FLAGS=-D__SAMD21E18A__
 BUILD_PATH=build
 INCLUDES=-I CMSIS/CMSIS/Include/ -I CMSIS/Device/ATMEL/ -I./drivers/ -I./utils/ \
 		-I./utils/preprocessor/ -I./utils/interrupt 
