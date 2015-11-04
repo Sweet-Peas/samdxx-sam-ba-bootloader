@@ -21,7 +21,7 @@
 #ifndef __GUARD_LED_H__
 #define __GUARD_LED_H__
 
-#define ACTIVITY_LED	PORT_PB30
+#define ACTIVITY_LED	PORT_PA16
 
 void init_leds(void);
 void set_cdc_activity_led(int state);

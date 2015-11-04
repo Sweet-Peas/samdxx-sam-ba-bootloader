@@ -94,7 +94,6 @@
 #define NVM_SW_CALIB_DFLL48M_COARSE_VAL   58
 #define NVM_SW_CALIB_DFLL48M_FINE_VAL     64
 // This is where the LED pin is defined, change as needed.
-#define ACTIVE_LED		PORT_PB30
 
 static void check_start_application(void);
 

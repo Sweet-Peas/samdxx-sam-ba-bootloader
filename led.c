@@ -29,7 +29,7 @@ volatile PortGroup *led_port = 0;
  */
 void init_leds(void)
 {
-	led_port = (volatile PortGroup *)&PORT->Group[1];
+	led_port = (volatile PortGroup *)&PORT->Group[0];
 	led_port->DIRSET.reg = (ACTIVITY_LED);
 	led_port->OUTSET.reg = (ACTIVITY_LED);
 }
